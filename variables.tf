@@ -102,3 +102,18 @@ variable "image_version" {
   type        = string
   description = "image version"
 }
+
+variable "storage_name" {
+  type        = string
+  description = "storage acc name"
+}
+
+variable "account_tier" {
+  type        = string
+  description = "account tier"
+}
+
+variable "account_replication_type" {
+  type = string
+  description = "acc replication type"
+}
