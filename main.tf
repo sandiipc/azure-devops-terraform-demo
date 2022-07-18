@@ -29,6 +29,7 @@ resource "azurerm_network_security_group" "nsgrule" {
 
     }
   }
+
   depends_on = [
     azurerm_resource_group.rg
   ]
@@ -39,6 +40,7 @@ resource "azurerm_virtual_network" "vnet" {
   address_space       = ["10.0.0.0/16"]
   location            = var.location
   resource_group_name = var.resource_group_name
+
   depends_on = [
     azurerm_resource_group.rg
   ]
@@ -49,8 +51,10 @@ resource "azurerm_subnet" "subnet" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.virtual_network_name
   address_prefixes     = ["10.0.0.0/24"]
+  network_security_group_id = azurerm_network_security_group.nsgrule.id
+
   depends_on = [
-    azurerm_resource_group.rg, azurerm_virtual_network.vnet
+    azurerm_resource_group.rg, azurerm_network_security_group.nsgrule, azurerm_virtual_network.vnet
   ]
 }
 
@@ -71,6 +75,7 @@ resource "azurerm_public_ip" "public_ip" {
   resource_group_name = var.resource_group_name
   allocation_method   = var.public_ip_allocation_method
   sku                 = var.public_ip_sku
+
   depends_on = [
     azurerm_resource_group.rg
   ]
@@ -87,15 +92,16 @@ resource "azurerm_network_interface" "nic" {
     private_ip_address_allocation = var.private_ip_allocation_method
     public_ip_address_id          = azurerm_public_ip.public_ip.id
   }
+  
   depends_on = [
     azurerm_resource_group.rg
   ]
 }
 
-resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
-  network_interface_id      = azurerm_network_interface.nic.id
-  network_security_group_id = azurerm_network_security_group.nsgrule.id
-}
+# resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
+#   network_interface_id      = azurerm_network_interface.nic.id
+#   network_security_group_id = azurerm_network_security_group.nsgrule.id
+# }
 
 resource "azurerm_windows_virtual_machine" "vm" {
   name                  = var.windows_vm_name
