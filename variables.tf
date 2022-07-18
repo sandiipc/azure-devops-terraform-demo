@@ -117,3 +117,13 @@ variable "account_replication_type" {
   type = string
   description = "acc replication type"
 }
+
+variable "networkrule" {
+  type = list
+  description = "list of network rule"
+}
+
+variable "nsg_name" {
+  type = string
+  description = "network security group name"
+}

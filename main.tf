@@ -8,6 +8,32 @@ resource "azurerm_resource_group" "rg" {
 # VNET & Subnets
 #------------------------------------------------------###################
 
+resource "azurerm_network_security_group" "nsgrule" {
+  name                = var.nsg_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  dynamic "security_rule" {
+    iterator = rule
+    for_each = var.networkrule
+    content {
+      name                       = rule.value.name
+      priority                   = rule.value.priority
+      direction                  = rule.value.direction
+      access                     = rule.value.access
+      protocol                   = rule.value.protocol
+      source_port_range          = rule.value.source_port_range
+      destination_port_range     = rule.value.destination_port_range
+      source_address_prefix      = rule.value.source_address_prefix
+      destination_address_prefix = rule.value.destination_address_prefix
+
+    }
+  }
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
+}
+
 resource "azurerm_virtual_network" "vnet" {
   name                = var.virtual_network_name
   address_space       = ["10.0.0.0/16"]
@@ -64,6 +90,11 @@ resource "azurerm_network_interface" "nic" {
   depends_on = [
     azurerm_resource_group.rg
   ]
+}
+
+resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
+  network_interface_id      = azurerm_network_interface.nic.id
+  network_security_group_id = azurerm_network_security_group.nsgrule.id
 }
 
 resource "azurerm_windows_virtual_machine" "vm" {
