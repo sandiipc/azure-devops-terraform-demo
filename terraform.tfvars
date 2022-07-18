@@ -41,8 +41,8 @@ networkrule = [
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
-    source_port_range          = "443"
-    destination_port_range     = "*"   
+    source_port_range          = "*"
+    destination_port_range     = "443"   
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   },
@@ -52,8 +52,8 @@ networkrule = [
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
-    source_port_range          = "3389"
-    destination_port_range     = "*"
+    source_port_range          = "*"
+    destination_port_range     = "3389"
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   },
