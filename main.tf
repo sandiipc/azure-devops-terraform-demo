@@ -8,32 +8,32 @@ resource "azurerm_resource_group" "rg" {
 # VNET & Subnets
 #------------------------------------------------------###################
 
-resource "azurerm_network_security_group" "nsgrule" {
-  name                = var.nsg_name
-  resource_group_name = var.resource_group_name
-  location            = var.location
+# resource "azurerm_network_security_group" "nsgrule" {
+#   name                = var.nsg_name
+#   resource_group_name = var.resource_group_name
+#   location            = var.location
 
-  dynamic "security_rule" {
-    iterator = rule
-    for_each = var.networkrule
-    content {
-      name                       = rule.value.name
-      priority                   = rule.value.priority
-      direction                  = rule.value.direction
-      access                     = rule.value.access
-      protocol                   = rule.value.protocol
-      source_port_range          = rule.value.source_port_range
-      destination_port_range     = rule.value.destination_port_range
-      source_address_prefix      = rule.value.source_address_prefix
-      destination_address_prefix = rule.value.destination_address_prefix
+#   dynamic "security_rule" {
+#     iterator = rule
+#     for_each = var.networkrule
+#     content {
+#       name                       = rule.value.name
+#       priority                   = rule.value.priority
+#       direction                  = rule.value.direction
+#       access                     = rule.value.access
+#       protocol                   = rule.value.protocol
+#       source_port_range          = rule.value.source_port_range
+#       destination_port_range     = rule.value.destination_port_range
+#       source_address_prefix      = rule.value.source_address_prefix
+#       destination_address_prefix = rule.value.destination_address_prefix
 
-    }
-  }
+#     }
+#   }
 
-  depends_on = [
-    azurerm_resource_group.rg
-  ]
-}
+#   depends_on = [
+#     azurerm_resource_group.rg
+#   ]
+# }
 
 resource "azurerm_virtual_network" "vnet" {
   name                = var.virtual_network_name
@@ -51,12 +51,20 @@ resource "azurerm_subnet" "subnet" {
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.virtual_network_name
   address_prefixes     = ["10.0.0.0/24"]
-  network_security_group_id = azurerm_network_security_group.nsgrule.id
 
   depends_on = [
     azurerm_resource_group.rg, azurerm_network_security_group.nsgrule, azurerm_virtual_network.vnet
   ]
 }
+
+# resource "azurerm_subnet_network_security_group_association" "subnet_nsgrule" {
+#   subnet_id                 = azurerm_subnet.subnet.id
+#   network_security_group_id = azurerm_network_security_group.nsgrule.id
+
+#   depends_on = [
+#     azurerm_subnet.subnet, azurerm_network_security_group.nsgrule
+#   ]
+# }
 
 # resource "azurerm_subnet" "bastion" {
 #   name                 = "AzureBastionSubnet"
@@ -92,7 +100,7 @@ resource "azurerm_network_interface" "nic" {
     private_ip_address_allocation = var.private_ip_allocation_method
     public_ip_address_id          = azurerm_public_ip.public_ip.id
   }
-  
+
   depends_on = [
     azurerm_resource_group.rg
   ]
