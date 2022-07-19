@@ -93,7 +93,7 @@ resource "azurerm_network_interface" "nic" {
   name                = var.network_interface_name
   location            = var.location
   resource_group_name = var.resource_group_name
-  network_security_group_id = azurerm_network_security_group.nsg.id
+  network_security_group_id = "${azurerm_network_security_group.nsg.id}"
 
   ip_configuration {
     name                          = var.nic_ip_config_name
