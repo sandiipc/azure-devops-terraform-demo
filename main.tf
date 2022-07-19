@@ -93,7 +93,6 @@ resource "azurerm_network_interface" "nic" {
   name                = var.network_interface_name
   location            = var.location
   resource_group_name = var.resource_group_name
-  network_security_group_id = "${azurerm_network_security_group.nsg.id}"
 
   ip_configuration {
     name                          = var.nic_ip_config_name
@@ -103,14 +102,14 @@ resource "azurerm_network_interface" "nic" {
   }
 
   depends_on = [
-    azurerm_resource_group.rg, azurerm_network_security_group.nsg
+    azurerm_resource_group.rg
   ]
 }
 
-# resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
-#   network_interface_id      = azurerm_network_interface.nic.id
-#   network_security_group_id = azurerm_network_security_group.nsgrule.id
-# }
+resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
+  network_interface_id      = azurerm_network_interface.nic.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}
 
 resource "azurerm_windows_virtual_machine" "vm" {
   name                  = var.windows_vm_name
