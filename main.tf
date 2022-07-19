@@ -8,32 +8,32 @@ resource "azurerm_resource_group" "rg" {
 # VNET & Subnets
 #------------------------------------------------------###################
 
-# resource "azurerm_network_security_group" "nsgrule" {
-#   name                = var.nsg_name
-#   resource_group_name = var.resource_group_name
-#   location            = var.location
+resource "azurerm_network_security_group" "nsg" {
+  name                = var.nsg_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
 
-#   dynamic "security_rule" {
-#     iterator = rule
-#     for_each = var.networkrule
-#     content {
-#       name                       = rule.value.name
-#       priority                   = rule.value.priority
-#       direction                  = rule.value.direction
-#       access                     = rule.value.access
-#       protocol                   = rule.value.protocol
-#       source_port_range          = rule.value.source_port_range
-#       destination_port_range     = rule.value.destination_port_range
-#       source_address_prefix      = rule.value.source_address_prefix
-#       destination_address_prefix = rule.value.destination_address_prefix
+  dynamic "security_rule" {
+    iterator = rule
+    for_each = var.networkrule
+    content {
+      name                       = rule.value.name
+      priority                   = rule.value.priority
+      direction                  = rule.value.direction
+      access                     = rule.value.access
+      protocol                   = rule.value.protocol
+      source_port_range          = rule.value.source_port_range
+      destination_port_range     = rule.value.destination_port_range
+      source_address_prefix      = rule.value.source_address_prefix
+      destination_address_prefix = rule.value.destination_address_prefix
 
-#     }
-#   }
+    }
+  }
 
-#   depends_on = [
-#     azurerm_resource_group.rg
-#   ]
-# }
+  depends_on = [
+    azurerm_resource_group.rg
+  ]
+}
 
 resource "azurerm_virtual_network" "vnet" {
   name                = var.virtual_network_name
@@ -93,6 +93,7 @@ resource "azurerm_network_interface" "nic" {
   name                = var.network_interface_name
   location            = var.location
   resource_group_name = var.resource_group_name
+  network_security_group_id = azurerm_network_security_group.nsg.id
 
   ip_configuration {
     name                          = var.nic_ip_config_name
@@ -102,7 +103,7 @@ resource "azurerm_network_interface" "nic" {
   }
 
   depends_on = [
-    azurerm_resource_group.rg
+    azurerm_resource_group.rg, azurerm_network_security_group.nsg
   ]
 }
 
