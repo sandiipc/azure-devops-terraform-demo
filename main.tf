@@ -1,3 +1,5 @@
+
+
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
   location = var.location
@@ -57,14 +59,14 @@ resource "azurerm_subnet" "subnet" {
   ]
 }
 
-# resource "azurerm_subnet_network_security_group_association" "subnet_nsgrule" {
-#   subnet_id                 = azurerm_subnet.subnet.id
-#   network_security_group_id = azurerm_network_security_group.nsgrule.id
+resource "azurerm_subnet_network_security_group_association" "subnet_nsg" {
+  subnet_id                 = azurerm_subnet.subnet.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
 
-#   depends_on = [
-#     azurerm_subnet.subnet, azurerm_network_security_group.nsgrule
-#   ]
-# }
+  depends_on = [
+    azurerm_subnet.subnet, azurerm_network_security_group.nsg
+  ]
+}
 
 # resource "azurerm_subnet" "bastion" {
 #   name                 = "AzureBastionSubnet"
@@ -106,10 +108,10 @@ resource "azurerm_network_interface" "nic" {
   ]
 }
 
-resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
-  network_interface_id      = azurerm_network_interface.nic.id
-  network_security_group_id = azurerm_network_security_group.nsg.id
-}
+# resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" {
+#   network_interface_id      = azurerm_network_interface.nic.id
+#   network_security_group_id = azurerm_network_security_group.nsg.id
+# }
 
 resource "azurerm_windows_virtual_machine" "vm" {
   name                  = var.windows_vm_name
